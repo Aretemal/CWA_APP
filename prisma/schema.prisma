@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int                 @id @default(autoincrement())
+  email         String              @unique
+  password      String
+  name          String?
+  role          Role                @default(USER)
+  books         Book[]
+  bookmarks     Bookmark[]
+  comments      Comment[]
+  notifications UserNotification[]
+  createdAt     DateTime            @default(now())
+  followers     User[]              @relation("UserFollows")
+  following     User[]              @relation("UserFollows")
+  bookshelves   Bookshelf[]
+  folders       Folder[]
+}
+
+model Book {
+  id          Int         @id @default(autoincrement())
+  title       String
+  author      String
+  filePath    String
+  description String?
+  price       Decimal?    @db.Decimal(10, 2)
+  imageUrl    String?
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id])
+  createdAt   DateTime    @default(now())
+  genres      Genre[]
+  comments    Comment[]
+  bookmarks   Bookmark[]
+  bookshelves Bookshelf[]
+  folders     Folder[]
+}
+
+model Folder {
+  id        Int      @id @default(autoincrement())
+  name      String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, name])
+} 

@@ -1,0 +1,6 @@
+/uploads/*
+!/uploads/.gitkeep 
+/CWA_API/node_modules
+/CWA_FRONT/node_modules
+/CWA_API/uploads
+/CWA_FRONT/uploads
