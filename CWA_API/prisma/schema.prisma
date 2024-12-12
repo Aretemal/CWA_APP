@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  id          Int       @id @default(autoincrement())
+  title       String
+  author      String
+  filePath    String
+  description String?
+  price       Decimal?  @db.Decimal(10, 2)
+  imageUrl    String?
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime  @default(now())
+  genres      Genre[]
+  comments    Comment[]
+  bookmarks   Bookmark[]
+  bookshelves Bookshelf[]
+  folders     Folder[]
+}
+
+model Genre {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  password      String
+  name          String?
+  role          Role          @default(USER)
+  books         Book[]
+  bookmarks     Bookmark[]
+  comments      Comment[]
+  notifications UserNotification[]
+  chats         Chat[]         @relation("UserChats")
+  messages      Message[]
+  createdAt     DateTime       @default(now())
+  followers    User[]   @relation("UserFollows")
+  following    User[]   @relation("UserFollows")
+  bookshelves   Bookshelf[]
+  folders     Folder[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  book      Book     @relation(fields: [bookId], references: [id])
+  bookId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  creatorId   Int
+  recipients  String   // 'all' или ID конкретного пользователя
+  users       UserNotification[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model UserNotification {
+  id             Int          @id @default(autoincrement())
+  user           User         @relation(fields: [userId], references: [id])
+  userId         Int
+  notification   Notification @relation(fields: [notificationId], references: [id])
+  notificationId Int
+  viewed         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([userId, notificationId])
+}
+
+model Bookmark {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  book        Book     @relation(fields: [bookId], references: [id])
+  bookId      Int
+  pageNumber  Int?
+  title       String   // Название закладки
+  note        String?  // Заметка к закладке
+  color       String?  // Цвет закладки для визуального ��азличия
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model News {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Chat {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  user      User      @relation("UserChats", fields: [userId], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String
+  userId    Int
+  chatId    Int
+  isAdmin   Boolean  @default(false)
+  viewed    Boolean  @default(false)
+  user      User     @relation(fields: [userId], references: [id])
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum BookshelfType {
+  PLAN_TO_READ
+  READING
+  COMPLETED
+  DROPPED
+  FAVORITE
+}
+
+model Bookshelf {
+  id        Int           @id @default(autoincrement())
+  type      BookshelfType
+  userId    Int
+  user      User         @relation(fields: [userId], references: [id])
+  books     Book[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@unique([userId, type])
+}
+
+model Folder {
+  id        Int      @id @default(autoincrement())
+  name      String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  books     Book[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, name])
+}

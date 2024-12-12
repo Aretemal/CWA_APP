@@ -1,0 +1,19 @@
+<svg width="1440" height="900" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="a" x1="0" x2="1440" y1="0" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1a237e" offset="0"/>
+      <stop stop-color="#0d47a1" offset="1"/>
+    </linearGradient>
+  </defs>
+  <path d="M0 0h1440v900H0z" fill="url(#a)"/>
+  <g fill="#fff" fill-opacity=".05">
+    <circle r="50" cx="100" cy="100"/>
+    <circle r="75" cx="300" cy="300"/>
+    <circle r="35" cx="500" cy="150"/>
+    <circle r="60" cx="900" cy="400"/>
+    <circle r="45" cx="1200" cy="200"/>
+    <circle r="70" cx="1100" cy="600"/>
+    <circle r="40" cx="200" cy="700"/>
+    <circle r="55" cx="600" cy="800"/>
+  </g>
+</svg> 
